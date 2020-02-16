@@ -1,10 +1,9 @@
 .header {
   background-color: #fff;
-
   padding: 0.4rem;
   overflow: hidden;
-  height: 2.8rem;
-  border-bottom: 1px solid #ccc;
+  height: 3.2rem;
+  border-bottom: 1px solid #eee;
 }
 .header-logo {
   color: #1e90ff;
@@ -18,10 +17,10 @@
   padding-left: 0.3rem;
 }
 .ant-meu {
-  line-height: 2.6rem;
+  line-height: 2.8rem;
 }
 .ant-menu-item {
-  font-size: 0.7rem !important;
+  font-size: 1rem !important;
   padding-left: 1rem;
   padding-right: 1rem;
 }
