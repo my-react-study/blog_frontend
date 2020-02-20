@@ -1,0 +1,11 @@
+.footer-div {
+  width: 100%;
+  text-align: center;
+  background-color: #fff;
+  padding: 0.4rem;
+  overflow: hidden;
+  height: 3.2rem;
+  margin-top: 0.5rem;
+  border-bottom: 1px solid #eee;
+  color: #888;
+}
