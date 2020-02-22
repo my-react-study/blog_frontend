@@ -6,45 +6,36 @@ import Author from '../components/Author'
 import Advertisement from '../components/Advertisement'
 import Footer from '../components/Footer'
 import '../public/style/pages/Detail.css'
-import ReactMarkdown from 'react-markdown'
-import MarkNavbar from 'markdown-navbar';
 import 'markdown-navbar/dist/navbar.css';
-const Detail = () => {
+import axios from 'axios'
+import marked from 'marked'
+import hljs from "highlight.js";
+import 'highlight.js/styles/monokai-sublime.css';
+import Tocify from '../components/tocify.tsx'
+const Detail = (initialProps) => {
 
-  let markdown = '# P01:课程介绍和环境搭建\n' +
-    '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
-    '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
-    '**这是加粗的文字**\n\n' +
-    '*这是倾斜的文字*`\n\n' +
-    '***这是斜体加粗的文字***\n\n' +
-    '~~这是加删除线的文字~~ \n\n' +
-    '\`console.log(111)\` \n\n' +
-    '# p02:来个Hello World 初始Vue3.0\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n' +
-    '***\n\n\n' +
-    '# p03:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p04:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p05:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p06:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p07:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '``` var a=11; ```'
+  const renderer = new marked.Renderer();
+
+  const tocify = new Tocify()
+  renderer.heading = function (text, level, raw) {
+    const anchor = tocify.add(text, level);
+    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`;
+  };
+  marked.setOptions({
+    renderer: renderer,
+    gfm: true,
+    pedantic: false,
+    sanitize: false,
+    tables: true,
+    breaks: false,
+    smartLists: true,
+    smartypants: false,
+    highlight: function (code) {
+      return hljs.highlightAuto(code).value;
+    }
+  });
+
+  let html = marked(initialProps.article_content)
 
   return (
     <>
@@ -58,28 +49,25 @@ const Detail = () => {
             <div className="bread-div">
               <Breadcrumb>
                 <Breadcrumb.Item><a href="/">首页</a></Breadcrumb.Item>
-                <Breadcrumb.Item>视频列表</Breadcrumb.Item>
-                <Breadcrumb.Item>xxxx</Breadcrumb.Item>
+                <Breadcrumb.Item>{initialProps.typeName}</Breadcrumb.Item>
+                <Breadcrumb.Item> {initialProps.title}</Breadcrumb.Item>
               </Breadcrumb>
             </div>
 
             <div>
               <div className="detailed-title">
-                React实战视频教程-技术胖Blog开发(更新08集)
+                {initialProps.title}
               </div>
 
               <div className="list-icon center">
-                <span><Icon type="calendar" /> 2019-06-28</span>
-                <span><Icon type="folder" /> 视频教程</span>
-                <span><Icon type="fire" /> 5498人</span>
+                <span><Icon type="calendar" /> {initialProps.addTime}</span>
+                <span><Icon type="folder" /> {initialProps.typeName}</span>
+                <span><Icon type="fire" /> {initialProps.view_count}</span>
               </div>
 
               <div className="detailed-content" >
-                <div className="detailed-content" >
-                  <ReactMarkdown
-                    source={markdown}
-                    escapeHtml={false}
-                  />
+                <div className="detailed-content" dangerouslySetInnerHTML={{ __html: html }}>
+
                 </div>
               </div>
 
@@ -94,11 +82,7 @@ const Detail = () => {
           <Affix offsetTop={5}>
             <div className="detailed-nav comm-box">
               <div className="nav-title">文章目录</div>
-              <MarkNavbar
-                className="article-menu"
-                source={markdown}
-                ordered={false}
-              />
+              {tocify && tocify.render()}
             </div>
           </Affix>
         </Col>
@@ -107,4 +91,21 @@ const Detail = () => {
     </>
   )
 }
+
+Detail.getInitialProps = async (context) => {
+  console.log(context.query.id)
+  let id = context.query.id
+  const promise = new Promise((resolve) => {
+
+    axios('http://127.0.0.1:7001/default/getArticleById/' + id).then(
+      (res) => {
+        console.log(res)
+        resolve(res.data.data[0])
+      }
+    )
+  })
+
+  return await promise
+}
+
 export default Detail

@@ -7,6 +7,7 @@ import Author from '../components/Author'
 import Advertisement from '../components/advertisement'
 import Footer from '../components/Footer'
 import axios from 'axios'
+import Link from 'next/link'
 const Home = (initialProps) => {
   console.log(initialProps)
   //---------主要代码-------------start
@@ -26,7 +27,11 @@ const Home = (initialProps) => {
             dataSource={list}
             renderItem={item => (
               <List.Item>
-                <div className="list-title">{item.title}</div>
+                <div className="list-title">
+                  <Link href={{ pathname: '/detail', query: { id: item.id } }}>
+                    <a>{item.title}</a>
+                  </Link>
+                </div>
                 <div className="list-icon">
                   <span><Icon type="calendar" /> {item.addTime}</span>
                   <span><Icon type="folder" /> {item.typeName}</span>
