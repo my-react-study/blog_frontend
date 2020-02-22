@@ -9,12 +9,35 @@ import Footer from '../components/Footer'
 import axios from 'axios'
 import Link from 'next/link'
 import servicePath from '../config/apiUrl'
+import marked from 'marked'
+import hljs from "highlight.js";
+import 'highlight.js/styles/monokai-sublime.css';
+import '../public/style/pages/index.css'
 
 const Home = (initialProps) => {
   console.log(initialProps)
   //---------主要代码-------------start
   const [list, setList] = useState(initialProps.data);
   //---------主要代码-------------end
+
+  const renderer = new marked.Renderer();
+  marked.setOptions({
+    renderer: renderer,
+    gfm: true,
+    pedantic: false,
+    sanitize: false,
+    tables: true,
+    breaks: false,
+    smartLists: true,
+    smartypants: false,
+    sanitize: false,
+    xhtml: false,
+    highlight: function (code) {
+      return hljs.highlightAuto(code).value;
+    }
+
+  });
+
   return (
     <div>
       <Head>
@@ -39,7 +62,9 @@ const Home = (initialProps) => {
                   <span><Icon type="folder" /> {item.typeName}</span>
                   <span><Icon type="fire" /> {item.view_count}人</span>
                 </div>
-                <div className="list-context">{item.introduce}</div>
+                <div className="list-context"
+                  dangerouslySetInnerHTML={{ __html: marked(item.introduce) }}
+                />
               </List.Item>
             )}
           />
